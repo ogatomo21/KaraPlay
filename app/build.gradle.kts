@@ -37,7 +37,7 @@ android {
                 keyAlias = props["keyAlias"] as? String ?: ""
                 keyPassword = props["keyPassword"] as? String ?: ""
             } else {
-                storeFile = file("app/keystore.jks")
+                storeFile = file("keystore.jks")
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS")
                 keyPassword = System.getenv("KEY_PASSWORD")
