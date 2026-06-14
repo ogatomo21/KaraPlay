@@ -75,7 +75,11 @@ class PlaybackService : Service() {
 
     private fun playTrack(track: Track) {
         mediaPlayer?.release()
-        mediaPlayer = MediaPlayer().apply {
+
+        // 💡修正ポイント: 新しいインスタンスを先に変数に代入する
+        mediaPlayer = MediaPlayer()
+
+        mediaPlayer?.apply {
             setDataSource(this@PlaybackService, track.uri)
             setOnCompletionListener {
                 PlaybackStore.isPlaying.value = false
@@ -85,9 +89,12 @@ class PlaybackService : Service() {
             PlaybackStore.durationMs.intValue = duration
             PlaybackStore.positionMs.intValue = 0
             PlaybackStore.key.intValue = 0
+
+            // 変数に代入済みなので、applyPitch内で新しいプレイヤーを参照できる
             applyPitch()
             start()
         }
+
         PlaybackStore.currentTrack.value = track
         PlaybackStore.isPlaying.value = true
         startAsForeground()
