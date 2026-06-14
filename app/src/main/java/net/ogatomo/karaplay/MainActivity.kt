@@ -38,7 +38,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
@@ -541,13 +543,21 @@ private fun PlayerScreen() {
     val key = PlaybackStore.key.intValue
     var seekValue by remember(position, duration) { mutableIntStateOf(position) }
 
+    // スクロール状態を管理する変数を追加
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .verticalScroll(scrollState), // 全体をスクロール可能に変更
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally // コンポーネントを中央揃え
     ) {
+        // アートワーク（画面幅に合わせつつ少し縮小し、大きすぎる表示を防ぐ）
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.85f)
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
@@ -573,7 +583,12 @@ private fun PlayerScreen() {
 
         Spacer(Modifier.height(4.dp))
 
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        // 曲名・アーティスト名
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = track?.title ?: "曲が選択されていません",
                 style = MaterialTheme.typography.titleLarge,
@@ -592,7 +607,8 @@ private fun PlayerScreen() {
 
         Spacer(Modifier.height(4.dp))
 
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        // シークバーと再生時間
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.fillMaxWidth()) {
             Slider(
                 value = seekValue.toFloat(),
                 onValueChange = { seekValue = it.toInt() },
@@ -610,6 +626,7 @@ private fun PlayerScreen() {
             }
         }
 
+        // コントロールボタン群（再生・キー操作）
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -708,14 +725,23 @@ private fun PlayerScreen() {
             }
         }
 
-        Spacer(Modifier.weight(1f))
+        // スクロールレイアウト内での weight はエラーになるため、固定の Spacer に変更
+        Spacer(Modifier.height(16.dp))
 
+        // 下部キースライダー
         Card(
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Slider(value = key.toFloat(), onValueChange = { context.setPlaybackKey(it.toInt()) }, valueRange = -12f..12f, steps = 23)
+                Slider(
+                    value = key.toFloat(),
+                    onValueChange = { context.setPlaybackKey(it.toInt()) },
+                    valueRange = -12f..12f,
+                    steps = 23,
+                    enabled = track != null // トラックがない場合はスライダーも無効化
+                )
             }
         }
     }

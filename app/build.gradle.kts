@@ -18,8 +18,8 @@ android {
         applicationId = "net.ogatomo.karaplay"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
@@ -99,7 +99,8 @@ dependencies {
     implementation(libs.license.scribe.runtime)
     implementation(libs.androidx.appcompat.appcompat)
     implementation(libs.androidx.recyclerview)
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.androidx.compose.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

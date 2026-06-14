@@ -140,6 +140,10 @@ class PlaybackService : Service() {
     private fun applyPitch() {
         val player = mediaPlayer ?: return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            // 💡追加ポイント1: パラメータ変更前の実際の再生状態を記憶しておく
+            val wasPlaying = player.isPlaying
+
             try {
                 val params = player.playbackParams
                     .setPitch(keyToPitch(PlaybackStore.key.intValue))
@@ -154,6 +158,12 @@ class PlaybackService : Service() {
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                 }
+            }
+
+            // 💡追加ポイント2: もし元々一時停止中だった場合、
+            // playbackParamsのセットによって勝手に再生が始まってしまうため、再度pause()を呼び出す
+            if (!wasPlaying) {
+                player.pause()
             }
         }
     }
